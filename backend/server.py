@@ -170,7 +170,45 @@ async def get_conversation(session_id: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-
+@app.get("/sessions")
+async def list_sessions():
+    """List all conversation sessions with their first message as a preview"""
+    sessions = []
+    try:
+        if USE_S3:
+            # Handle S3 storage
+            response = s3_client.list_objects_v2(Bucket=S3_BUCKET)
+            if 'Contents' in response:
+                # Sort by last modified to show newest sessions first
+                sorted_contents = sorted(response['Contents'], key=lambda x: x['LastModified'], reverse=True)
+                for obj in sorted_contents:
+                    if obj['Key'].endswith('.json'):
+                        session_id = obj['Key'].replace('.json', '')
+                        conv = load_conversation(session_id)
+                        first_msg = next((m['content'] for m in conv if m['role'] == 'user'), "New Conversation")
+                        # Create a short preview title
+                        preview = first_msg[:40] + "..." if len(first_msg) > 40 else first_msg
+                        sessions.append({"id": session_id, "preview": preview})
+        else:
+            # Handle local storage
+            if os.path.exists(MEMORY_DIR):
+                # Get files sorted by modification time
+                files = [os.path.join(MEMORY_DIR, f) for f in os.listdir(MEMORY_DIR) if f.endswith('.json')]
+                files.sort(key=os.path.getmtime, reverse=True)
+                
+                for file_path in files:
+                    session_id = os.path.basename(file_path).replace('.json', '')
+                    conv = load_conversation(session_id)
+                    first_msg = next((m['content'] for m in conv if m['role'] == 'user'), "New Conversation")
+                    preview = first_msg[:40] + "..." if len(first_msg) > 40 else first_msg
+                    sessions.append({"id": session_id, "preview": preview})
+                    
+        return {"sessions": sessions}
+    except Exception as e:
+        print(f"Error listing sessions: {str(e)}")
+        raise HTTPException(status_code=500, detail="Could not retrieve sessions")
+    
+    
 if __name__ == "__main__":
     import uvicorn
 

@@ -2,25 +2,24 @@ import Twin from '@/components/twin';
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100">
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-4xl mx-auto">
-          <h1 className="text-4xl font-bold text-center text-gray-800 mb-2">
-            AI in Production
-          </h1>
-          <p className="text-center text-gray-600 mb-8">
-            Deploy your Digital Twin to the cloud
-          </p>
-
-          <div className="h-[600px]">
-            <Twin />
-          </div>
-
-          <footer className="mt-8 text-center text-sm text-gray-500">
-            <p>Week 2: Building Your Digital Twin</p>
-          </footer>
-        </div>
+    <main className="h-screen flex flex-col bg-gradient-to-br from-slate-50 to-gray-100 overflow-hidden">
+      {/* Header Area */}
+      <div className="flex-shrink-0 py-4 px-4">
+        <h1 className="text-3xl md:text-4xl font-black text-center text-slate-900 tracking-tight drop-shadow-sm mb-2">
+          Jefferson Ederhion's Interactive Portfolio
+        </h1>
       </div>
+
+      {/* Main Chat Area: flex-1 makes it fill all remaining vertical space */}
+      {/* min-h-0 is crucial for flexbox scrolling to work properly */}
+      <div className="flex-1 w-full max-w-[1600px] mx-auto px-4 pb-4 min-h-0">
+        <Twin />
+      </div>
+
+      {/* Footer Area */}
+      <footer className="flex-shrink-0 py-3 text-center text-sm text-gray-500">
+        <p>Interactive Digital Twin Portfolio</p>
+      </footer>
     </main>
   );
 }
