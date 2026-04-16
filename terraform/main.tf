@@ -256,6 +256,20 @@ resource "aws_apigatewayv2_route" "get_health" {
   target    = "integrations/${aws_apigatewayv2_integration.lambda.id}"
 }
 
+# Route to fetch the list of previous chat sessions for the sidebar
+resource "aws_apigatewayv2_route" "get_sessions" {
+  api_id    = aws_apigatewayv2_api.main.id
+  route_key = "GET /sessions"
+  target    = "integrations/${aws_apigatewayv2_integration.lambda.id}"
+}
+
+# Route to load a specific conversation's history
+resource "aws_apigatewayv2_route" "get_conversation" {
+  api_id    = aws_apigatewayv2_api.main.id
+  route_key = "GET /conversation/{session_id}"
+  target    = "integrations/${aws_apigatewayv2_integration.lambda.id}"
+}
+
 # Explicitly grants API Gateway the permission to actually trigger your Lambda function.
 resource "aws_lambda_permission" "api_gw" {
   statement_id  = "AllowExecutionFromAPIGateway"
